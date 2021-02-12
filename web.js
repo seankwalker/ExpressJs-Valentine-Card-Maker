@@ -71,18 +71,23 @@ app.post('/', function(request, response){
         message : request.body.message,
         image : request.body.image
     };
+
+    if (!cards[request.body.to]) {
+        cards[request.body.to] = {};
+    }
+    cards[request.body.to][request.body.from] = newCard;
     
-    cards[request.body.to] = newCard;
-    
-    response.redirect(`/card/${request.body.to}`); // for example /card/andrew
+    response.redirect(`/card?from=${request.body.from}&to=${request.body.to}`); // for example /card/andrew
 });
 
 // Display a specific card 
-app.get('/card/:recipientName', function(request, response){
-    // get the requested recipient's name
-    recipientName = request.params.recipientName;
+app.get('/card', function(request, response){
 
-    cardData = cards[recipientName];  // cardData contains 'to','from','message','image'
+    to = request.query.to;
+    from = request.query.from;
+
+
+    cardData = cards[to] ? cards[to][from] : undefined;
     
     if (cardData != undefined) {
         
