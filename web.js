@@ -42,8 +42,9 @@ app.configure(function() {
 // the images for people to choose from. all images in /static/img
 valentineImages = ['cat.jpg','ducky.jpg','myLittlePony.jpg'];
 
-// this array will hold card data from forms
-cardArray = [];
+
+// this object will hold card data from forms
+cards = {}
 
 // main page - display the card form
 app.get('/', function(request, response) {
@@ -62,7 +63,7 @@ app.post('/', function(request, response){
     console.log("Inside app.post('/')");
     console.log("form received and includes")
     console.log(request.body);
-    
+
     // Simple data object to hold the form data
     var newCard = {
         to : request.body.to,
@@ -71,22 +72,17 @@ app.post('/', function(request, response){
         image : request.body.image
     };
     
-    // Put this newCard object into the cardArray
-    cardArray.push(newCard);
+    cards[request.body.to] = newCard;
     
-    // Get the position of the card in the cardArray
-    cardNumber = cardArray.length - 1;
-    
-    response.redirect('/card/' + cardNumber); // for example /card/1
+    response.redirect(`/card/${request.body.to}`); // for example /card/andrew
 });
 
 // Display a specific card 
-app.get('/card/:cardNumber', function(request, response){
-    // get the requested card number
-    cardNumber = request.params.cardNumber;
+app.get('/card/:recipientName', function(request, response){
+    // get the requested recipient's name
+    recipientName = request.params.recipientName;
 
-    // Get the card from cardArray
-    cardData = cardArray[cardNumber];  // cardData contains 'to','from','message','image'
+    cardData = cards[recipientName];  // cardData contains 'to','from','message','image'
     
     if (cardData != undefined) {
         
